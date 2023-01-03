@@ -17,28 +17,28 @@ import static org.apache.commons.collections4.MultiMapUtils.newListValuedHashMap
  */
 public class Collection<E> {
 
-    private final List<SearchableProperty<E>> propertyEnumConstants;
-
     private final List<E> elements;
 
-    private final Map<SearchableProperty<E>, Function<E, ?>> getterFunctions;
+    private final List<SearchableProperty<E>> propertyEnumConstants;
+
+    private final Map<SearchableProperty<E>, Function<E, ?>> getValueFunctions;
 
     private final Map<SearchableProperty<E>, ListValuedMap<Object, Integer>> indicesMapsByProperty;
 
     public Collection(Class<? extends SearchableProperty<E>> propertyEnumClass) {
         Objects.requireNonNull(propertyEnumClass);
-        elements = new ArrayList<>();
-        getterFunctions = new HashMap<>();
-        indicesMapsByProperty = new HashMap<>();
-        this.propertyEnumConstants = new LinkedList<>();
-
         var enumConstants = propertyEnumClass.getEnumConstants();
         if (!propertyEnumClass.isEnum() || enumConstants.length == 0) {
             throw new IllegalArgumentException("class %s mus be enum with properties".formatted(propertyEnumClass));
         }
 
+        this.elements = new ArrayList<>();
+        this.getValueFunctions = new HashMap<>();
+        this.indicesMapsByProperty = new HashMap<>();
+        this.propertyEnumConstants = new LinkedList<>();
+
         for (SearchableProperty<E> enumConstant : enumConstants) {
-            getterFunctions.put(enumConstant, enumConstant.getFunc());
+            this.getValueFunctions.put(enumConstant, enumConstant.getFunc());
             this.propertyEnumConstants.add(enumConstant);
         }
     }
@@ -51,7 +51,7 @@ public class Collection<E> {
 
     private void updateIndices(E element, int elementIndex) {
         for (SearchableProperty<E> propertyEnumConstant : propertyEnumConstants) {
-            var value = getterFunctions.get(propertyEnumConstant).apply(element);
+            var value = getValueFunctions.get(propertyEnumConstant).apply(element);
             var indexMap = indicesMapsByProperty.computeIfAbsent(propertyEnumConstant, k -> newListValuedHashMap());
             indexMap.put(value, elementIndex);
         }
