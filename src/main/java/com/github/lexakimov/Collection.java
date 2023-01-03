@@ -4,6 +4,7 @@ import org.apache.commons.collections4.ListValuedMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -72,12 +73,55 @@ public class Collection<E> {
         return result;
     }
 
+    public interface SearchableProperty<E> {
+        Function<E, Object> getFunc();
+    }
 
     public int size() {
         return elements.size();
     }
 
-    public interface SearchableProperty<E> {
-        Function<E, Object> getFunc();
+    public boolean isEmpty() {
+        return elements.isEmpty();
+    }
+
+    public void clear() {
+        indicesMapsByProperty.clear();
+        elements.clear();
+    }
+
+    public boolean contains(E o) {
+        return elements.contains(o);
+    }
+
+    public boolean contains(SearchableProperty<E> property, Object value) {
+        var indexMap = indicesMapsByProperty.getOrDefault(property, null);
+        if (indexMap == null) {
+            return false;
+        }
+        var elementsIndices = indexMap.get(value);
+        return !elementsIndices.isEmpty();
+    }
+
+    public Iterator<E> iterator() {
+        return elements.iterator();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Collection<?> that = (Collection<?>) o;
+
+        if (!elements.equals(that.elements)) return false;
+        if (!propertyEnumConstants.equals(that.propertyEnumConstants)) return false;
+        if (!getValueFunctions.equals(that.getValueFunctions)) return false;
+        return indicesMapsByProperty.equals(that.indicesMapsByProperty);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(elements, propertyEnumConstants, getValueFunctions, indicesMapsByProperty);
     }
 }
