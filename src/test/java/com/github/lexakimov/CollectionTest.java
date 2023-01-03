@@ -1,5 +1,6 @@
 package com.github.lexakimov;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class CollectionTest {
 
     @Nested
+    @DisplayName("create collection")
     class Create {
 
         @Test
@@ -58,6 +60,7 @@ class CollectionTest {
 
 
     @Nested
+    @DisplayName("add elements to collection")
     class Add {
 
         @Test
@@ -76,6 +79,7 @@ class CollectionTest {
     }
 
     @Nested
+    @DisplayName("search elements in collection by properties")
     class Search {
 
         @Test
@@ -93,11 +97,11 @@ class CollectionTest {
                 Jacob,     Smith, 3
                 Kelsey,    Hawkins, 4
                 Karen,     Mcguire, 5
-                Colleen,   Rogers, 6
+                Colleen,   null, 6
                 Crystal,   Carey, 7
                 John,      King, 8
                 Stephanie, Chen, 9
-                Justin,    Fuller, 10""")
+                Justin,    Fuller, 10""", nullValues = "null")
         void searchInCollection_noIntersections(String firstName, String lastName, int age) {
             var uut = new Collection<>(PersonSearchableProperties.class);
             assertDoesNotThrow(() -> CollectionTest.addElements(uut));
@@ -160,13 +164,12 @@ class CollectionTest {
         uut.addElement(new Person("Jacob", "Smith", 3));
         uut.addElement(new Person("Kelsey", "Hawkins", 4));
         uut.addElement(new Person("Karen", "Mcguire", 5));
-        uut.addElement(new Person("Colleen", "Rogers", 6));
+        uut.addElement(new Person("Colleen", null, 6));
         uut.addElement(new Person("Crystal", "Carey", 7));
         uut.addElement(new Person("John", "King", 8));
         uut.addElement(new Person("Stephanie", "Chen", 9));
         uut.addElement(new Person("Justin", "Fuller", 10));
     }
-
 
     private static void addElementsWithIntersection(Collection<Person> uut) {
         uut.addElement(new Person("Caleb", "Dominguez", 1));
