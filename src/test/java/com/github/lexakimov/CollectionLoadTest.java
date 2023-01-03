@@ -9,8 +9,8 @@ import java.time.Duration;
 import java.util.LinkedList;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import static com.github.lexakimov.CollectionLoadTest.PersonSearchableProperty.FIRST_NAME;
-import static com.github.lexakimov.CollectionLoadTest.PersonSearchableProperty.LAST_NAME;
+import static com.github.lexakimov.PersonSearchableProperty.FIRST_NAME;
+import static com.github.lexakimov.PersonSearchableProperty.LAST_NAME;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class CollectionLoadTest {
@@ -88,26 +88,4 @@ class CollectionLoadTest {
                 value, result.size(), System.currentTimeMillis() - start);
     }
 
-
-    record Person(String firstName, String lastName, int age) {
-
-    }
-
-    enum PersonSearchableProperty implements Collection.SearchableProperty<Person> {
-        FIRST_NAME(Person::firstName),
-        LAST_NAME(Person::lastName),
-        AGE(Person::age);
-
-        private final Function<Person, Object> func;
-
-        PersonSearchableProperty(Function<Person, Object> func) {
-            this.func = func;
-        }
-
-        @Override
-        public Function<Person, Object> getFunc() {
-            return func;
-        }
-
-    }
 }

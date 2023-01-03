@@ -7,8 +7,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import java.util.Arrays;
 import java.util.function.Function;
-import static com.github.lexakimov.CollectionTest.PersonSearchableProperties.FIRST_NAME;
-import static com.github.lexakimov.CollectionTest.PersonSearchableProperties.LAST_NAME;
+import static com.github.lexakimov.PersonSearchableProperty.FIRST_NAME;
+import static com.github.lexakimov.PersonSearchableProperty.LAST_NAME;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.empty;
@@ -56,7 +56,7 @@ class CollectionTest {
 
         @Test
         void createdSuccessful() {
-            var uut = assertDoesNotThrow(() -> new Collection<>(PersonSearchableProperties.class));
+            var uut = assertDoesNotThrow(() -> new Collection<>(PersonSearchableProperty.class));
             assertThat(uut.size(), equalTo(0));
             assertThat(uut.isEmpty(), equalTo(true));
         }
@@ -68,21 +68,21 @@ class CollectionTest {
 
         @Test
         void addElements() {
-            var uut = new Collection<>(PersonSearchableProperties.class);
+            var uut = new Collection<>(PersonSearchableProperty.class);
             assertDoesNotThrow(() -> CollectionTest.addElements(uut));
             assertThat(uut.size(), equalTo(10));
         }
 
         @Test
         void addElementsWithIntersection() {
-            var uut = new Collection<>(PersonSearchableProperties.class);
+            var uut = new Collection<>(PersonSearchableProperty.class);
             assertDoesNotThrow(() -> CollectionTest.addElementsWithIntersection(uut));
             assertThat(uut.size(), equalTo(10));
         }
 
         @Test
         void clear() {
-            var uut = new Collection<>(PersonSearchableProperties.class);
+            var uut = new Collection<>(PersonSearchableProperty.class);
             assertDoesNotThrow(() -> CollectionTest.addElements(uut));
             assertThat(uut.size(), equalTo(10));
             uut.clear();
@@ -91,7 +91,7 @@ class CollectionTest {
 
         @Test
         void containsElement() {
-            var uut = new Collection<>(PersonSearchableProperties.class);
+            var uut = new Collection<>(PersonSearchableProperty.class);
             assertDoesNotThrow(() -> CollectionTest.addElements(uut));
             assertTrue(uut.contains(new Person("James", "Ryan", 2)));
             assertFalse(uut.contains(new Person("Tony", "Ryan", 2)));
@@ -99,7 +99,7 @@ class CollectionTest {
 
         @Test
         void containsElementByProperty() {
-            var uut = new Collection<>(PersonSearchableProperties.class);
+            var uut = new Collection<>(PersonSearchableProperty.class);
             assertDoesNotThrow(() -> CollectionTest.addElements(uut));
             assertTrue(uut.contains(FIRST_NAME, "Jacob"));
             assertTrue(uut.contains(LAST_NAME, null));
@@ -113,7 +113,7 @@ class CollectionTest {
 
         @Test
         void searchInEmptyCollection() {
-            var uut = new Collection<>(PersonSearchableProperties.class);
+            var uut = new Collection<>(PersonSearchableProperty.class);
             var result = assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, "test"));
             assertThat(result, notNullValue());
             assertThat(result, empty());
@@ -121,7 +121,7 @@ class CollectionTest {
 
         @Test
         void searchInCollectionByNullValue() {
-            var uut = new Collection<>(PersonSearchableProperties.class);
+            var uut = new Collection<>(PersonSearchableProperty.class);
             assertDoesNotThrow(() -> CollectionTest.addElements(uut));
 
             var resultByFirstName = assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, null));
@@ -145,7 +145,7 @@ class CollectionTest {
                 Stephanie, Chen, 9
                 Justin,    Fuller, 10""", nullValues = "null")
         void searchInCollection_noIntersections(String firstName, String lastName, int age) {
-            var uut = new Collection<>(PersonSearchableProperties.class);
+            var uut = new Collection<>(PersonSearchableProperty.class);
             assertDoesNotThrow(() -> CollectionTest.addElements(uut));
 
             var resultByFirstName = assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, firstName));
@@ -162,7 +162,7 @@ class CollectionTest {
                 Caleb, 2, '1,5'
                 Jacob, 3, '3,9,10'""")
         void searchInCollection_withIntersections(String firstName, int size, String ages) {
-            var uut = new Collection<>(PersonSearchableProperties.class);
+            var uut = new Collection<>(PersonSearchableProperty.class);
             assertDoesNotThrow(() -> CollectionTest.addElementsWithIntersection(uut));
 
             var agesList = Arrays.stream(ages.split(",")).map(Integer::valueOf).toList();
@@ -184,8 +184,8 @@ class CollectionTest {
 
         @Test
         void twoEmptyAreEqual() {
-            var uut1 = new Collection<>(PersonSearchableProperties.class);
-            var uut2 = new Collection<>(PersonSearchableProperties.class);
+            var uut1 = new Collection<>(PersonSearchableProperty.class);
+            var uut2 = new Collection<>(PersonSearchableProperty.class);
 
             assertEquals(uut1, uut2);
         }
@@ -210,7 +210,7 @@ class CollectionTest {
 
             }
 
-            var uut1 = new Collection<>(PersonSearchableProperties.class);
+            var uut1 = new Collection<>(PersonSearchableProperty.class);
             var uut2 = new Collection<>(AnotherPersonSearchableProperties.class);
 
             assertNotEquals(uut1, uut2);
@@ -218,9 +218,9 @@ class CollectionTest {
 
         @Test
         void twoCollectionsAreEqual() {
-            var uut1 = new Collection<>(PersonSearchableProperties.class);
+            var uut1 = new Collection<>(PersonSearchableProperty.class);
             uut1.addElement(new Person("test", "test", 20));
-            var uut2 = new Collection<>(PersonSearchableProperties.class);
+            var uut2 = new Collection<>(PersonSearchableProperty.class);
             uut2.addElement(new Person("test", "test", 20));
 
             assertEquals(uut1, uut2);
@@ -228,9 +228,9 @@ class CollectionTest {
 
         @Test
         void twoCollectionsAreDifferent() {
-            var uut1 = new Collection<>(PersonSearchableProperties.class);
+            var uut1 = new Collection<>(PersonSearchableProperty.class);
             uut1.addElement(new Person("test", "test", 10));
-            var uut2 = new Collection<>(PersonSearchableProperties.class);
+            var uut2 = new Collection<>(PersonSearchableProperty.class);
             uut2.addElement(new Person("test", "test", 20));
 
             assertNotEquals(uut1, uut2);
@@ -244,8 +244,8 @@ class CollectionTest {
 
         @Test
         void hashCodesOfTwoEmptyAreEqual() {
-            var hashCode1 = new Collection<>(PersonSearchableProperties.class).hashCode();
-            var hashCode2 = new Collection<>(PersonSearchableProperties.class).hashCode();
+            var hashCode1 = new Collection<>(PersonSearchableProperty.class).hashCode();
+            var hashCode2 = new Collection<>(PersonSearchableProperty.class).hashCode();
 
             assertEquals(hashCode1, hashCode2);
         }
@@ -270,7 +270,7 @@ class CollectionTest {
 
             }
 
-            var hashCode1 = new Collection<>(PersonSearchableProperties.class).hashCode();
+            var hashCode1 = new Collection<>(PersonSearchableProperty.class).hashCode();
             var hashCode2 = new Collection<>(AnotherPersonSearchableProperties.class).hashCode();
 
             assertNotEquals(hashCode1, hashCode2);
@@ -278,9 +278,9 @@ class CollectionTest {
 
         @Test
         void hashCodesOfTwoCollectionsAreEqual() {
-            var uut1 = new Collection<>(PersonSearchableProperties.class);
+            var uut1 = new Collection<>(PersonSearchableProperty.class);
             uut1.addElement(new Person("test", "test", 20));
-            var uut2 = new Collection<>(PersonSearchableProperties.class);
+            var uut2 = new Collection<>(PersonSearchableProperty.class);
             uut2.addElement(new Person("test", "test", 20));
 
             assertEquals(uut1.hashCode(), uut2.hashCode());
@@ -288,9 +288,9 @@ class CollectionTest {
 
         @Test
         void hashCodesOfTwoCollectionsAreDifferent() {
-            var uut1 = new Collection<>(PersonSearchableProperties.class);
+            var uut1 = new Collection<>(PersonSearchableProperty.class);
             uut1.addElement(new Person("test", "test", 10));
-            var uut2 = new Collection<>(PersonSearchableProperties.class);
+            var uut2 = new Collection<>(PersonSearchableProperty.class);
             uut2.addElement(new Person("test", "test", 20));
 
             assertNotEquals(uut1.hashCode(), uut2.hashCode());
@@ -300,7 +300,7 @@ class CollectionTest {
 
     @Test
     void iteratorTest() {
-        var uut = new Collection<>(PersonSearchableProperties.class);
+        var uut = new Collection<>(PersonSearchableProperty.class);
 
         var iterator = uut.iterator();
         assertThat(iterator, notNullValue());
@@ -317,28 +317,6 @@ class CollectionTest {
 
         assertThat(iterator.next(), notNullValue());
         assertFalse(iterator.hasNext());
-    }
-
-    record Person(String firstName, String lastName, int age) {
-
-    }
-
-    enum PersonSearchableProperties implements Collection.SearchableProperty<Person> {
-        FIRST_NAME(Person::firstName),
-        LAST_NAME(Person::lastName),
-        AGE(Person::age);
-
-        private final Function<Person, Object> func;
-
-        PersonSearchableProperties(Function<Person, Object> func) {
-            this.func = func;
-        }
-
-        @Override
-        public Function<Person, Object> getFunc() {
-            return func;
-        }
-
     }
 
     private static void addElements(Collection<Person> uut) {
