@@ -12,7 +12,7 @@ import static com.github.lexakimov.PersonSearchableProperty.LAST_NAME;
 import static java.lang.System.out;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-class CollectionLoadTest {
+class MultisearchCollectionLoadTest {
 
     @Test
     void searchInHugeCollection() throws IOException, URISyntaxException {
@@ -33,7 +33,7 @@ class CollectionLoadTest {
             out.println();
         }
 
-        var uut = new Collection<>(PersonSearchableProperty.class);
+        var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
         {
             var start = System.currentTimeMillis();
             plainList.forEach(uut::addElement);
@@ -72,7 +72,7 @@ class CollectionLoadTest {
     }
 
     private static void performSearchInCollection(
-            Collection<Person> uut,
+            MultisearchCollection<Person> uut,
             PersonSearchableProperty property,
             String value
     ) {

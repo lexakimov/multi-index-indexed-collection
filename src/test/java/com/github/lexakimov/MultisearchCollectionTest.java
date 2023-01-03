@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CollectionTest {
+class MultisearchCollectionTest {
 
     @Nested
     @DisplayName("create collection")
@@ -30,19 +30,19 @@ class CollectionTest {
 
         @Test
         void createWithNotEnum() {
-            class FakePersonSearchableProperties implements Collection.SearchableProperty<Person> {
+            class FakePersonSearchableProperties implements MultisearchCollection.SearchableProperty<Person> {
                 @Override
                 public Function<Person, Object> getFunc() {
                     return null;
                 }
             }
 
-            assertThrows(IllegalArgumentException.class, () -> new Collection<>(FakePersonSearchableProperties.class));
+            assertThrows(IllegalArgumentException.class, () -> new MultisearchCollection<>(FakePersonSearchableProperties.class));
         }
 
         @Test
         void createWithEmptyEnum() {
-            enum FakePersonSearchableProperties implements Collection.SearchableProperty<Person> {
+            enum FakePersonSearchableProperties implements MultisearchCollection.SearchableProperty<Person> {
                 ;
 
                 @Override
@@ -51,12 +51,12 @@ class CollectionTest {
                 }
             }
 
-            assertThrows(IllegalArgumentException.class, () -> new Collection<>(FakePersonSearchableProperties.class));
+            assertThrows(IllegalArgumentException.class, () -> new MultisearchCollection<>(FakePersonSearchableProperties.class));
         }
 
         @Test
         void createdSuccessful() {
-            var uut = assertDoesNotThrow(() -> new Collection<>(PersonSearchableProperty.class));
+            var uut = assertDoesNotThrow(() -> new MultisearchCollection<>(PersonSearchableProperty.class));
             assertThat(uut.size(), equalTo(0));
             assertThat(uut.isEmpty(), equalTo(true));
         }
@@ -68,22 +68,22 @@ class CollectionTest {
 
         @Test
         void addElements() {
-            var uut = new Collection<>(PersonSearchableProperty.class);
-            assertDoesNotThrow(() -> CollectionTest.addElements(uut));
+            var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
+            assertDoesNotThrow(() -> MultisearchCollectionTest.addElements(uut));
             assertThat(uut.size(), equalTo(10));
         }
 
         @Test
         void addElementsWithIntersection() {
-            var uut = new Collection<>(PersonSearchableProperty.class);
-            assertDoesNotThrow(() -> CollectionTest.addElementsWithIntersection(uut));
+            var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
+            assertDoesNotThrow(() -> MultisearchCollectionTest.addElementsWithIntersection(uut));
             assertThat(uut.size(), equalTo(10));
         }
 
         @Test
         void clear() {
-            var uut = new Collection<>(PersonSearchableProperty.class);
-            assertDoesNotThrow(() -> CollectionTest.addElements(uut));
+            var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
+            assertDoesNotThrow(() -> MultisearchCollectionTest.addElements(uut));
             assertThat(uut.size(), equalTo(10));
             uut.clear();
             assertThat(uut.size(), equalTo(0));
@@ -91,16 +91,16 @@ class CollectionTest {
 
         @Test
         void containsElement() {
-            var uut = new Collection<>(PersonSearchableProperty.class);
-            assertDoesNotThrow(() -> CollectionTest.addElements(uut));
+            var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
+            assertDoesNotThrow(() -> MultisearchCollectionTest.addElements(uut));
             assertTrue(uut.contains(new Person("James", "Ryan", 2)));
             assertFalse(uut.contains(new Person("Tony", "Ryan", 2)));
         }
 
         @Test
         void containsElementByProperty() {
-            var uut = new Collection<>(PersonSearchableProperty.class);
-            assertDoesNotThrow(() -> CollectionTest.addElements(uut));
+            var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
+            assertDoesNotThrow(() -> MultisearchCollectionTest.addElements(uut));
             assertTrue(uut.contains(FIRST_NAME, "Jacob"));
             assertTrue(uut.contains(LAST_NAME, null));
             assertFalse(uut.contains(FIRST_NAME, "Lex"));
@@ -113,7 +113,7 @@ class CollectionTest {
 
         @Test
         void searchInEmptyCollection() {
-            var uut = new Collection<>(PersonSearchableProperty.class);
+            var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
             var result = assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, "test"));
             assertThat(result, notNullValue());
             assertThat(result, empty());
@@ -121,8 +121,8 @@ class CollectionTest {
 
         @Test
         void searchInCollectionByNullValue() {
-            var uut = new Collection<>(PersonSearchableProperty.class);
-            assertDoesNotThrow(() -> CollectionTest.addElements(uut));
+            var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
+            assertDoesNotThrow(() -> MultisearchCollectionTest.addElements(uut));
 
             var resultByFirstName = assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, null));
             assertThat(resultByFirstName, allOf(notNullValue(), empty()));
@@ -145,8 +145,8 @@ class CollectionTest {
                 Stephanie, Chen, 9
                 Justin,    Fuller, 10""", nullValues = "null")
         void searchInCollection_noIntersections(String firstName, String lastName, int age) {
-            var uut = new Collection<>(PersonSearchableProperty.class);
-            assertDoesNotThrow(() -> CollectionTest.addElements(uut));
+            var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
+            assertDoesNotThrow(() -> MultisearchCollectionTest.addElements(uut));
 
             var resultByFirstName = assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, firstName));
             var resultByLastName = assertDoesNotThrow(() -> uut.searchByProperty(LAST_NAME, lastName));
@@ -162,8 +162,8 @@ class CollectionTest {
                 Caleb, 2, '1,5'
                 Jacob, 3, '3,9,10'""")
         void searchInCollection_withIntersections(String firstName, int size, String ages) {
-            var uut = new Collection<>(PersonSearchableProperty.class);
-            assertDoesNotThrow(() -> CollectionTest.addElementsWithIntersection(uut));
+            var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
+            assertDoesNotThrow(() -> MultisearchCollectionTest.addElementsWithIntersection(uut));
 
             var agesList = Arrays.stream(ages.split(",")).map(Integer::valueOf).toList();
 
@@ -184,15 +184,15 @@ class CollectionTest {
 
         @Test
         void twoEmptyAreEqual() {
-            var uut1 = new Collection<>(PersonSearchableProperty.class);
-            var uut2 = new Collection<>(PersonSearchableProperty.class);
+            var uut1 = new MultisearchCollection<>(PersonSearchableProperty.class);
+            var uut2 = new MultisearchCollection<>(PersonSearchableProperty.class);
 
             assertEquals(uut1, uut2);
         }
 
         @Test
         void twoEmptyAreDifferent() {
-            enum AnotherPersonSearchableProperties implements Collection.SearchableProperty<Person> {
+            enum AnotherPersonSearchableProperties implements MultisearchCollection.SearchableProperty<Person> {
                 FIRST_NAME(Person::firstName),
                 LAST_NAME(Person::lastName),
                 AGE(Person::age);
@@ -210,17 +210,17 @@ class CollectionTest {
 
             }
 
-            var uut1 = new Collection<>(PersonSearchableProperty.class);
-            var uut2 = new Collection<>(AnotherPersonSearchableProperties.class);
+            var uut1 = new MultisearchCollection<>(PersonSearchableProperty.class);
+            var uut2 = new MultisearchCollection<>(AnotherPersonSearchableProperties.class);
 
             assertNotEquals(uut1, uut2);
         }
 
         @Test
         void twoCollectionsAreEqual() {
-            var uut1 = new Collection<>(PersonSearchableProperty.class);
+            var uut1 = new MultisearchCollection<>(PersonSearchableProperty.class);
             uut1.addElement(new Person("test", "test", 20));
-            var uut2 = new Collection<>(PersonSearchableProperty.class);
+            var uut2 = new MultisearchCollection<>(PersonSearchableProperty.class);
             uut2.addElement(new Person("test", "test", 20));
 
             assertEquals(uut1, uut2);
@@ -228,9 +228,9 @@ class CollectionTest {
 
         @Test
         void twoCollectionsAreDifferent() {
-            var uut1 = new Collection<>(PersonSearchableProperty.class);
+            var uut1 = new MultisearchCollection<>(PersonSearchableProperty.class);
             uut1.addElement(new Person("test", "test", 10));
-            var uut2 = new Collection<>(PersonSearchableProperty.class);
+            var uut2 = new MultisearchCollection<>(PersonSearchableProperty.class);
             uut2.addElement(new Person("test", "test", 20));
 
             assertNotEquals(uut1, uut2);
@@ -244,15 +244,15 @@ class CollectionTest {
 
         @Test
         void hashCodesOfTwoEmptyAreEqual() {
-            var hashCode1 = new Collection<>(PersonSearchableProperty.class).hashCode();
-            var hashCode2 = new Collection<>(PersonSearchableProperty.class).hashCode();
+            var hashCode1 = new MultisearchCollection<>(PersonSearchableProperty.class).hashCode();
+            var hashCode2 = new MultisearchCollection<>(PersonSearchableProperty.class).hashCode();
 
             assertEquals(hashCode1, hashCode2);
         }
 
         @Test
         void hashCodesOfTwoEmptyAreDifferent() {
-            enum AnotherPersonSearchableProperties implements Collection.SearchableProperty<Person> {
+            enum AnotherPersonSearchableProperties implements MultisearchCollection.SearchableProperty<Person> {
                 FIRST_NAME(Person::firstName),
                 LAST_NAME(Person::lastName),
                 AGE(Person::age);
@@ -270,17 +270,17 @@ class CollectionTest {
 
             }
 
-            var hashCode1 = new Collection<>(PersonSearchableProperty.class).hashCode();
-            var hashCode2 = new Collection<>(AnotherPersonSearchableProperties.class).hashCode();
+            var hashCode1 = new MultisearchCollection<>(PersonSearchableProperty.class).hashCode();
+            var hashCode2 = new MultisearchCollection<>(AnotherPersonSearchableProperties.class).hashCode();
 
             assertNotEquals(hashCode1, hashCode2);
         }
 
         @Test
         void hashCodesOfTwoCollectionsAreEqual() {
-            var uut1 = new Collection<>(PersonSearchableProperty.class);
+            var uut1 = new MultisearchCollection<>(PersonSearchableProperty.class);
             uut1.addElement(new Person("test", "test", 20));
-            var uut2 = new Collection<>(PersonSearchableProperty.class);
+            var uut2 = new MultisearchCollection<>(PersonSearchableProperty.class);
             uut2.addElement(new Person("test", "test", 20));
 
             assertEquals(uut1.hashCode(), uut2.hashCode());
@@ -288,9 +288,9 @@ class CollectionTest {
 
         @Test
         void hashCodesOfTwoCollectionsAreDifferent() {
-            var uut1 = new Collection<>(PersonSearchableProperty.class);
+            var uut1 = new MultisearchCollection<>(PersonSearchableProperty.class);
             uut1.addElement(new Person("test", "test", 10));
-            var uut2 = new Collection<>(PersonSearchableProperty.class);
+            var uut2 = new MultisearchCollection<>(PersonSearchableProperty.class);
             uut2.addElement(new Person("test", "test", 20));
 
             assertNotEquals(uut1.hashCode(), uut2.hashCode());
@@ -300,13 +300,13 @@ class CollectionTest {
 
     @Test
     void iteratorTest() {
-        var uut = new Collection<>(PersonSearchableProperty.class);
+        var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
 
         var iterator = uut.iterator();
         assertThat(iterator, notNullValue());
         assertFalse(iterator.hasNext());
 
-        assertDoesNotThrow(() -> CollectionTest.addElements(uut));
+        assertDoesNotThrow(() -> MultisearchCollectionTest.addElements(uut));
 
         iterator = uut.iterator();
         assertThat(iterator, notNullValue());
@@ -319,7 +319,7 @@ class CollectionTest {
         assertFalse(iterator.hasNext());
     }
 
-    private static void addElements(Collection<Person> uut) {
+    private static void addElements(MultisearchCollection<Person> uut) {
         uut.addElement(new Person("Caleb", "Dominguez", 1));
         uut.addElement(new Person("James", "Ryan", 2));
         uut.addElement(new Person("Jacob", "Smith", 3));
@@ -332,7 +332,7 @@ class CollectionTest {
         uut.addElement(new Person("Justin", "Fuller", 10));
     }
 
-    private static void addElementsWithIntersection(Collection<Person> uut) {
+    private static void addElementsWithIntersection(MultisearchCollection<Person> uut) {
         uut.addElement(new Person("Caleb", "Dominguez", 1));
         uut.addElement(new Person("James", "Ryan", 2));
         uut.addElement(new Person("Jacob", "Smith", 3));

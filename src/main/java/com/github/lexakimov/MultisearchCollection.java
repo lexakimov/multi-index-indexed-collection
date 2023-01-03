@@ -16,7 +16,7 @@ import static org.apache.commons.collections4.MultiMapUtils.newListValuedHashMap
  * @author akimov
  * created at: 03.01.2023 18:00
  */
-public class Collection<E> {
+public class MultisearchCollection<E> {
 
     private final List<E> elements;
 
@@ -26,11 +26,11 @@ public class Collection<E> {
 
     private final Map<SearchableProperty<E>, ListValuedMap<Object, Integer>> indicesMapsByProperty;
 
-    public Collection(Class<? extends SearchableProperty<E>> propertyEnumClass) {
-        Objects.requireNonNull(propertyEnumClass);
-        var enumConstants = propertyEnumClass.getEnumConstants();
-        if (!propertyEnumClass.isEnum() || enumConstants.length == 0) {
-            throw new IllegalArgumentException("class %s mus be enum with properties".formatted(propertyEnumClass));
+    public MultisearchCollection(Class<? extends SearchableProperty<E>> searchablePropertyEnumClass) {
+        Objects.requireNonNull(searchablePropertyEnumClass);
+        var enumConstants = searchablePropertyEnumClass.getEnumConstants();
+        if (!searchablePropertyEnumClass.isEnum() || enumConstants.length == 0) {
+            throw new IllegalArgumentException("class %s mus be enum with properties".formatted(searchablePropertyEnumClass));
         }
 
         this.elements = new ArrayList<>();
@@ -112,7 +112,7 @@ public class Collection<E> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Collection<?> that = (Collection<?>) o;
+        MultisearchCollection<?> that = (MultisearchCollection<?>) o;
 
         if (!elements.equals(that.elements)) return false;
         if (!propertyEnumConstants.equals(that.propertyEnumConstants)) return false;
