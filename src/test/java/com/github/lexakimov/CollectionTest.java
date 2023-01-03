@@ -90,6 +90,19 @@ class CollectionTest {
             assertThat(result, empty());
         }
 
+        @Test
+        void searchInCollectionByNullValue() {
+            var uut = new Collection<>(PersonSearchableProperties.class);
+            assertDoesNotThrow(() -> CollectionTest.addElements(uut));
+
+            var resultByFirstName = assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, null));
+            assertThat(resultByFirstName, allOf(notNullValue(), empty()));
+
+            var resultByLastName = assertDoesNotThrow(() -> uut.searchByProperty(LAST_NAME, null));
+            assertThat(resultByLastName, allOf(notNullValue(), hasSize(1)));
+            assertThat(resultByLastName.get(0).age(), equalTo(6));
+        }
+
         @ParameterizedTest
         @CsvSource(textBlock = """
                 Caleb,     Dominguez, 1
