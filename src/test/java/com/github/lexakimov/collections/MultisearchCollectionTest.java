@@ -1,5 +1,6 @@
-package com.github.lexakimov;
+package com.github.lexakimov.collections;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -7,8 +8,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import java.util.Arrays;
 import java.util.function.Function;
-import static com.github.lexakimov.PersonSearchableProperty.FIRST_NAME;
-import static com.github.lexakimov.PersonSearchableProperty.LAST_NAME;
+import static com.github.lexakimov.collections.PersonSearchableProperty.FIRST_NAME;
+import static com.github.lexakimov.collections.PersonSearchableProperty.LAST_NAME;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.empty;
@@ -56,7 +57,7 @@ class MultisearchCollectionTest {
 
         @Test
         void createdSuccessful() {
-            var uut = assertDoesNotThrow(() -> new MultisearchCollection<>(PersonSearchableProperty.class));
+            var uut = Assertions.assertDoesNotThrow(() -> new MultisearchCollection<>(PersonSearchableProperty.class));
             assertThat(uut.size(), equalTo(0));
             assertThat(uut.isEmpty(), equalTo(true));
         }
@@ -114,7 +115,7 @@ class MultisearchCollectionTest {
         @Test
         void searchInEmptyCollection() {
             var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
-            var result = assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, "test"));
+            var result = Assertions.assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, "test"));
             assertThat(result, notNullValue());
             assertThat(result, empty());
         }
@@ -124,10 +125,10 @@ class MultisearchCollectionTest {
             var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
             assertDoesNotThrow(() -> MultisearchCollectionTest.addElements(uut));
 
-            var resultByFirstName = assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, null));
+            var resultByFirstName = Assertions.assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, null));
             assertThat(resultByFirstName, allOf(notNullValue(), empty()));
 
-            var resultByLastName = assertDoesNotThrow(() -> uut.searchByProperty(LAST_NAME, null));
+            var resultByLastName = Assertions.assertDoesNotThrow(() -> uut.searchByProperty(LAST_NAME, null));
             assertThat(resultByLastName, allOf(notNullValue(), hasSize(1)));
             assertThat(resultByLastName.get(0).age(), equalTo(6));
         }
@@ -148,8 +149,8 @@ class MultisearchCollectionTest {
             var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
             assertDoesNotThrow(() -> MultisearchCollectionTest.addElements(uut));
 
-            var resultByFirstName = assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, firstName));
-            var resultByLastName = assertDoesNotThrow(() -> uut.searchByProperty(LAST_NAME, lastName));
+            var resultByFirstName = Assertions.assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, firstName));
+            var resultByLastName = Assertions.assertDoesNotThrow(() -> uut.searchByProperty(LAST_NAME, lastName));
             assertThat(resultByFirstName, allOf(notNullValue(), hasSize(1)));
             assertThat(resultByLastName, allOf(notNullValue(), hasSize(1)));
 
@@ -167,7 +168,7 @@ class MultisearchCollectionTest {
 
             var agesList = Arrays.stream(ages.split(",")).map(Integer::valueOf).toList();
 
-            var resultByFirstName = assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, firstName));
+            var resultByFirstName = Assertions.assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, firstName));
             assertThat(resultByFirstName, allOf(notNullValue(), hasSize(size)));
 
             for (int i = 0; i < resultByFirstName.size(); i++) {

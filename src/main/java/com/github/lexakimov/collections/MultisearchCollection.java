@@ -1,4 +1,4 @@
-package com.github.lexakimov;
+package com.github.lexakimov.collections;
 
 import org.apache.commons.collections4.ListValuedMap;
 import java.util.ArrayList;

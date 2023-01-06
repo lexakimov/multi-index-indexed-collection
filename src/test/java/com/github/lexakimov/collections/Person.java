@@ -1,4 +1,4 @@
-package com.github.lexakimov;
+package com.github.lexakimov.collections;
 
 /**
  * @author akimov

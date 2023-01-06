@@ -1,5 +1,6 @@
-package com.github.lexakimov;
+package com.github.lexakimov.collections;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -7,10 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
-import static com.github.lexakimov.PersonSearchableProperty.FIRST_NAME;
-import static com.github.lexakimov.PersonSearchableProperty.LAST_NAME;
+import static com.github.lexakimov.collections.PersonSearchableProperty.FIRST_NAME;
+import static com.github.lexakimov.collections.PersonSearchableProperty.LAST_NAME;
 import static java.lang.System.out;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class MultisearchCollectionLoadTest {
 
@@ -77,7 +77,7 @@ class MultisearchCollectionLoadTest {
             String value
     ) {
         var start = System.currentTimeMillis();
-        var result = assertDoesNotThrow(() -> uut.searchByProperty(property, value));
+        var result = Assertions.assertDoesNotThrow(() -> uut.searchByProperty(property, value));
         out.printf("[%-10s] %-5s elements found in collection for %9sms%n",
                 value, result.size(), System.currentTimeMillis() - start);
     }
