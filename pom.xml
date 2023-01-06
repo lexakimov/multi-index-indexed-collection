@@ -7,6 +7,28 @@
     <groupId>com.github.lexakimov</groupId>
     <artifactId>multi-property-search-collection</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>Multi-property search collection</name>
+    <description>It is a sandbox repository with a collection that allows you to store objects in a list and search
+        through predefined object properties in better than O(n) time.
+    </description>
+    <url>https://github.com/lexakimov/multi-property-search-collection</url>
+
+    <licenses>
+        <license>
+            <name>Apache 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>lexakimov</id>
+            <name>Alexey Akimov</name>
+            <email>lex.akimov23@gmail.com</email>
+        </developer>
+    </developers>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -22,7 +44,7 @@
             <version>4.4</version>
         </dependency>
 
-    <!-- Unit Tests -->
+        <!-- Unit Tests -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
