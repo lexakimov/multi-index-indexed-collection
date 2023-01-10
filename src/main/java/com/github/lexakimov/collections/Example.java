@@ -15,8 +15,8 @@ public class Example {
 
         }
 
-        // then, define Enum class that implements MultisearchCollection.SearchableProperty with properties
-        enum PersonSearchableProperties implements MultisearchCollection.SearchableProperty<Person> {
+        // then, define Enum class that implements MultiPropertySearchCollection.SearchableProperty with properties
+        enum PersonSearchableProperties implements SearchableProperty<Person> {
             FIRST_NAME(Person::firstName),
             LAST_NAME(Person::lastName),
             AGE(Person::age);
@@ -33,8 +33,8 @@ public class Example {
             }
         }
 
-        // then, create an instance on MultisearchCollection
-        var collection = new MultisearchCollection<Person>(PersonSearchableProperties.class);
+        // then, create an instance on MultiPropertySearchCollection
+        var collection = new MultiPropertySearchCollection<Person>(PersonSearchableProperties.class);
 
         // put elements into collection
         collection.addElement(new Person("Caleb", "Dominguez", 1));

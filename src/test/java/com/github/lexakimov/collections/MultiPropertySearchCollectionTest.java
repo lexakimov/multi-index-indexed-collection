@@ -1,6 +1,5 @@
 package com.github.lexakimov.collections;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -31,19 +30,19 @@ class MultiPropertySearchCollectionTest {
 
         @Test
         void createWithNotEnum() {
-            class FakePersonSearchableProperties implements SearchableProperty<Person> {
+            class BadEnum implements SearchableProperty<Person> {
                 @Override
                 public Function<Person, Object> getFunc() {
                     return null;
                 }
             }
 
-            assertThrows(IllegalArgumentException.class, () -> new MultiPropertySearchCollection<>(FakePersonSearchableProperties.class));
+            assertThrows(IllegalArgumentException.class, () -> new MultiPropertySearchCollection<>(BadEnum.class));
         }
 
         @Test
         void createWithEmptyEnum() {
-            enum FakePersonSearchableProperties implements SearchableProperty<Person> {
+            enum BadEnum implements SearchableProperty<Person> {
                 ;
 
                 @Override
@@ -52,12 +51,12 @@ class MultiPropertySearchCollectionTest {
                 }
             }
 
-            assertThrows(IllegalArgumentException.class, () -> new MultiPropertySearchCollection<>(FakePersonSearchableProperties.class));
+            assertThrows(IllegalArgumentException.class, () -> new MultiPropertySearchCollection<>(BadEnum.class));
         }
 
         @Test
         void createdSuccessful() {
-            var uut = Assertions.assertDoesNotThrow(() -> new MultiPropertySearchCollection<>(PersonSearchableProperty.class));
+            var uut = assertDoesNotThrow(() -> new MultiPropertySearchCollection<>(PersonSearchableProperty.class));
             assertThat(uut.size(), equalTo(0));
             assertThat(uut.isEmpty(), equalTo(true));
         }
@@ -90,6 +89,9 @@ class MultiPropertySearchCollectionTest {
             assertThat(uut.size(), equalTo(0));
         }
 
+        //    TODO: test size by property
+        //    TODO: extract containsElement to nested test class
+
         @Test
         void containsElement() {
             var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
@@ -115,7 +117,7 @@ class MultiPropertySearchCollectionTest {
         @Test
         void searchInEmptyCollection() {
             var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-            var result = Assertions.assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, "test"));
+            var result = assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, "test"));
             assertThat(result, notNullValue());
             assertThat(result, empty());
         }
@@ -125,10 +127,10 @@ class MultiPropertySearchCollectionTest {
             var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
             assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElements(uut));
 
-            var resultByFirstName = Assertions.assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, null));
+            var resultByFirstName = assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, null));
             assertThat(resultByFirstName, allOf(notNullValue(), empty()));
 
-            var resultByLastName = Assertions.assertDoesNotThrow(() -> uut.searchByProperty(LAST_NAME, null));
+            var resultByLastName = assertDoesNotThrow(() -> uut.searchByProperty(LAST_NAME, null));
             assertThat(resultByLastName, allOf(notNullValue(), hasSize(1)));
             assertThat(resultByLastName.get(0).age(), equalTo(6));
         }
@@ -149,8 +151,8 @@ class MultiPropertySearchCollectionTest {
             var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
             assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElements(uut));
 
-            var resultByFirstName = Assertions.assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, firstName));
-            var resultByLastName = Assertions.assertDoesNotThrow(() -> uut.searchByProperty(LAST_NAME, lastName));
+            var resultByFirstName = assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, firstName));
+            var resultByLastName = assertDoesNotThrow(() -> uut.searchByProperty(LAST_NAME, lastName));
             assertThat(resultByFirstName, allOf(notNullValue(), hasSize(1)));
             assertThat(resultByLastName, allOf(notNullValue(), hasSize(1)));
 
@@ -168,7 +170,7 @@ class MultiPropertySearchCollectionTest {
 
             var agesList = Arrays.stream(ages.split(",")).map(Integer::valueOf).toList();
 
-            var resultByFirstName = Assertions.assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, firstName));
+            var resultByFirstName = assertDoesNotThrow(() -> uut.searchByProperty(FIRST_NAME, firstName));
             assertThat(resultByFirstName, allOf(notNullValue(), hasSize(size)));
 
             for (int i = 0; i < resultByFirstName.size(); i++) {
