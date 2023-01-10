@@ -62,6 +62,25 @@ public class MultiPropertySearchCollection<E> {
         }
     }
 
+    public boolean remove(SearchableProperty<E> property, Object value) {
+        var indexMap = indicesMapsByProperty.getOrDefault(property, null);
+        if (indexMap == null) {
+            return false;
+        }
+
+        var elementsIndices = indexMap.get(value);
+        if (elementsIndices.isEmpty()) {
+            return false;
+        }
+//        TODO подумать над алгоритмом
+//        TODO подумать как компактно хранить индексы
+        var result = new ArrayList<E>(elementsIndices.size());
+
+        elementsIndices.forEach(i -> result.add(elements.get(i)));
+
+        return true;
+    }
+
     public List<E> searchByProperty(SearchableProperty<E> property, Object value) {
 
         var indexMap = indicesMapsByProperty.getOrDefault(property, null);

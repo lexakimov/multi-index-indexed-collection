@@ -110,6 +110,27 @@ class MultiPropertySearchCollectionTest {
         }
     }
 
+
+    @Nested
+    @DisplayName("remove element(s) off collection")
+    class Remove {
+
+        @Test
+        void removeByProperty() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElements(uut));
+            assertThat(uut.size(), equalTo(10));
+            assertTrue(uut.contains(FIRST_NAME, "Jacob"));
+
+            assertTrue(uut.remove(FIRST_NAME, "Jacob"));
+            assertThat(uut.size(), equalTo(9));
+            assertFalse(uut.contains(FIRST_NAME, "Jacob"));
+
+            assertFalse(uut.remove(FIRST_NAME, "Jacob"));
+            assertThat(uut.size(), equalTo(9));
+        }
+    }
+
     @Nested
     @DisplayName("search elements in collection by properties")
     class Search {
