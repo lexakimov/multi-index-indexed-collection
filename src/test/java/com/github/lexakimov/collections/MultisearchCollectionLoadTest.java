@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import static com.github.lexakimov.collections.PersonSearchableProperty.FIRST_NAME;
 import static com.github.lexakimov.collections.PersonSearchableProperty.LAST_NAME;
@@ -30,7 +31,6 @@ class MultisearchCollectionLoadTest {
                 }
             }
             out.printf("%s elements parsed from CSV for %sms%n", plainList.size(), System.currentTimeMillis() - start);
-            out.println();
         }
 
         var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
@@ -42,20 +42,22 @@ class MultisearchCollectionLoadTest {
         }
 
         performSearchInCollection(uut, FIRST_NAME, "Kristin");
-        performSearchInCollection(uut, FIRST_NAME, "Johnny");
-        performSearchInCollection(uut, LAST_NAME, "Ruiz");
-        performSearchInCollection(uut, LAST_NAME, "Castillo");
-        performSearchInCollection(uut, FIRST_NAME, "Miller");
-        performSearchInCollection(uut, FIRST_NAME, "Steven");
-        out.println();
-
         performLinearSearch(plainList, FIRST_NAME, "Kristin");
+
+        performSearchInCollection(uut, FIRST_NAME, "Johnny");
         performLinearSearch(plainList, FIRST_NAME, "Johnny");
+
+        performSearchInCollection(uut, LAST_NAME, "Ruiz");
         performLinearSearch(plainList, LAST_NAME, "Ruiz");
+
+        performSearchInCollection(uut, LAST_NAME, "Castillo");
         performLinearSearch(plainList, LAST_NAME, "Castillo");
+
+        performSearchInCollection(uut, FIRST_NAME, "Miller");
         performLinearSearch(plainList, FIRST_NAME, "Miller");
+
+        performSearchInCollection(uut, FIRST_NAME, "Steven");
         performLinearSearch(plainList, FIRST_NAME, "Steven");
-        out.println();
     }
 
     private static void performLinearSearch(
@@ -65,10 +67,10 @@ class MultisearchCollectionLoadTest {
     ) {
         var start = System.currentTimeMillis();
         var result = plainList.stream()
-                .filter(person -> property.getFunc().apply(person).equals(value))
+                .filter(person -> Objects.equals(property.getFunc().apply(person), value))
                 .collect(Collectors.toCollection(LinkedList::new));
-        out.printf("[%-10s] %-5s elements found in list for %15sms%n",
-                value, result.size(), System.currentTimeMillis() - start);
+        out.printf("  LINEAR SEARCH: %10s [%-10s] %6s elements found for %3s ms%n",
+                property.name(), value, result.size(), System.currentTimeMillis() - start);
     }
 
     private static void performSearchInCollection(
@@ -78,8 +80,8 @@ class MultisearchCollectionLoadTest {
     ) {
         var start = System.currentTimeMillis();
         var result = Assertions.assertDoesNotThrow(() -> uut.searchByProperty(property, value));
-        out.printf("[%-10s] %-5s elements found in collection for %9sms%n",
-                value, result.size(), System.currentTimeMillis() - start);
+        out.printf("EXTENDED SEARCH: %10s [%-10s] %6s elements found for %3s ms%n",
+                property.name(), value, result.size(), System.currentTimeMillis() - start);
     }
 
 }
