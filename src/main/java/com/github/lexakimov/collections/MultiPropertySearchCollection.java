@@ -16,27 +16,31 @@ import static org.apache.commons.collections4.MultiMapUtils.newListValuedHashMap
  * @author akimov
  * created at: 03.01.2023 18:00
  */
-public class MultisearchCollection<E> {
+public class MultiPropertySearchCollection<E> {
 
-    private final List<E> elements;
+    private final List<E> elements = new ArrayList<>();
 
-    private final List<SearchableProperty<E>> propertyEnumConstants;
+    private final List<SearchableProperty<E>> propertyEnumConstants = new LinkedList<>();
 
-    private final Map<SearchableProperty<E>, Function<E, ?>> getValueFunctions;
+    private final Map<SearchableProperty<E>, Function<E, ?>> getValueFunctions = new HashMap<>();
 
-    private final Map<SearchableProperty<E>, ListValuedMap<Object, Integer>> indicesMapsByProperty;
+    /**
+     * MAP[PROPERTY: MAP[PROPERTY_VALUE: LIST[indices of elements...]]]
+     */
+    private final Map<SearchableProperty<E>, ListValuedMap<Object, Integer>> indicesMapsByProperty = new HashMap<>();
 
-    public MultisearchCollection(Class<? extends SearchableProperty<E>> searchablePropertyEnumClass) {
+    public MultiPropertySearchCollection(Class<? extends SearchableProperty<E>> searchablePropertyEnumClass) {
         Objects.requireNonNull(searchablePropertyEnumClass);
-        var enumConstants = searchablePropertyEnumClass.getEnumConstants();
-        if (!searchablePropertyEnumClass.isEnum() || enumConstants.length == 0) {
-            throw new IllegalArgumentException("class %s mus be enum with properties".formatted(searchablePropertyEnumClass));
+        if (!searchablePropertyEnumClass.isEnum()) {
+            throw new IllegalArgumentException("%s must be enum that extends %s".formatted(searchablePropertyEnumClass,
+                    SearchableProperty.class.getName()));
         }
 
-        this.elements = new ArrayList<>();
-        this.getValueFunctions = new HashMap<>();
-        this.indicesMapsByProperty = new HashMap<>();
-        this.propertyEnumConstants = new LinkedList<>();
+        var enumConstants = searchablePropertyEnumClass.getEnumConstants();
+        if (enumConstants.length == 0) {
+            throw new IllegalArgumentException(
+                    "enum %s must contains at least 1 enumeration value".formatted(searchablePropertyEnumClass));
+        }
 
         for (SearchableProperty<E> enumConstant : enumConstants) {
             this.getValueFunctions.put(enumConstant, enumConstant.getFunc());
@@ -71,10 +75,6 @@ public class MultisearchCollection<E> {
         elementsIndices.forEach(i -> result.add(elements.get(i)));
 
         return result;
-    }
-
-    public interface SearchableProperty<E> {
-        Function<E, Object> getFunc();
     }
 
     public int size() {
@@ -112,7 +112,7 @@ public class MultisearchCollection<E> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        MultisearchCollection<?> that = (MultisearchCollection<?>) o;
+        MultiPropertySearchCollection<?> that = (MultiPropertySearchCollection<?>) o;
 
         if (!elements.equals(that.elements)) return false;
         if (!propertyEnumConstants.equals(that.propertyEnumConstants)) return false;

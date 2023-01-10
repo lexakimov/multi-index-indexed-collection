@@ -13,7 +13,7 @@ import static com.github.lexakimov.collections.PersonSearchableProperty.FIRST_NA
 import static com.github.lexakimov.collections.PersonSearchableProperty.LAST_NAME;
 import static java.lang.System.out;
 
-class MultisearchCollectionLoadTest {
+class MultiPropertySearchCollectionLoadTest {
 
     @Test
     void searchInHugeCollection() throws IOException, URISyntaxException {
@@ -33,7 +33,7 @@ class MultisearchCollectionLoadTest {
             out.printf("%s elements parsed from CSV for %sms%n", plainList.size(), System.currentTimeMillis() - start);
         }
 
-        var uut = new MultisearchCollection<>(PersonSearchableProperty.class);
+        var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
         {
             var start = System.currentTimeMillis();
             plainList.forEach(uut::addElement);
@@ -74,7 +74,7 @@ class MultisearchCollectionLoadTest {
     }
 
     private static void performSearchInCollection(
-            MultisearchCollection<Person> uut,
+            MultiPropertySearchCollection<Person> uut,
             PersonSearchableProperty property,
             String value
     ) {
