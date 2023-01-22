@@ -88,7 +88,7 @@ class MultiPropertySearchCollectionTest {
         @Test
         void addNullElement() {
             var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-            assertThrows(NullPointerException.class, () -> uut.addElement(null));
+            assertThrows(NullPointerException.class, () -> uut.add(null));
         }
     }
 
@@ -275,9 +275,9 @@ class MultiPropertySearchCollectionTest {
         @Test
         void twoCollectionsAreEqual() {
             var uut1 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-            uut1.addElement(new Person("test", "test", 20));
+            uut1.add(new Person("test", "test", 20));
             var uut2 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-            uut2.addElement(new Person("test", "test", 20));
+            uut2.add(new Person("test", "test", 20));
 
             assertEquals(uut1, uut2);
         }
@@ -285,73 +285,12 @@ class MultiPropertySearchCollectionTest {
         @Test
         void twoCollectionsAreDifferent() {
             var uut1 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-            uut1.addElement(new Person("test", "test", 10));
+            uut1.add(new Person("test", "test", 10));
             var uut2 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-            uut2.addElement(new Person("test", "test", 20));
+            uut2.add(new Person("test", "test", 20));
 
             assertNotEquals(uut1, uut2);
         }
-
-    }
-
-    @Nested
-    @DisplayName("hashCode() method")
-    class HashCode {
-
-        @Test
-        void hashCodesOfTwoEmptyAreEqual() {
-            var hashCode1 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class).hashCode();
-            var hashCode2 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class).hashCode();
-
-            assertEquals(hashCode1, hashCode2);
-        }
-
-        @Test
-        void hashCodesOfTwoEmptyAreDifferent() {
-            enum AnotherPersonSearchableProperties implements SearchableProperty<Person> {
-                FIRST_NAME(Person::firstName),
-                LAST_NAME(Person::lastName),
-                AGE(Person::age);
-
-                private final Function<Person, Object> func;
-
-                AnotherPersonSearchableProperties(Function<Person, Object> func) {
-                    this.func = func;
-                }
-
-                @Override
-                public Function<Person, Object> getFunc() {
-                    return func;
-                }
-
-            }
-
-            var hashCode1 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class).hashCode();
-            var hashCode2 = new MultiPropertySearchCollection<>(AnotherPersonSearchableProperties.class).hashCode();
-
-            assertNotEquals(hashCode1, hashCode2);
-        }
-
-        @Test
-        void hashCodesOfTwoCollectionsAreEqual() {
-            var uut1 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-            uut1.addElement(new Person("test", "test", 20));
-            var uut2 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-            uut2.addElement(new Person("test", "test", 20));
-
-            assertEquals(uut1.hashCode(), uut2.hashCode());
-        }
-
-        @Test
-        void hashCodesOfTwoCollectionsAreDifferent() {
-            var uut1 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-            uut1.addElement(new Person("test", "test", 10));
-            var uut2 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-            uut2.addElement(new Person("test", "test", 20));
-
-            assertNotEquals(uut1.hashCode(), uut2.hashCode());
-        }
-
     }
 
     @Nested
@@ -396,32 +335,101 @@ class MultiPropertySearchCollectionTest {
             var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
             assertThrows(NullPointerException.class, () -> uut.stream(null));
         }
+
+        @Test
+        void listIsUnmodifiable() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElements(uut));
+            var list = uut.list();
+            assertThat(list, hasSize(10));
+            assertThrows(UnsupportedOperationException.class, list::clear);
+        }
+    }
+
+    @Nested
+    @DisplayName("hashCode() method")
+    class HashCode {
+
+        @Test
+        void hashCodesOfTwoEmptyAreEqual() {
+            var hashCode1 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class).hashCode();
+            var hashCode2 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class).hashCode();
+
+            assertEquals(hashCode1, hashCode2);
+        }
+
+        @Test
+        void hashCodesOfTwoEmptyAreDifferent() {
+            enum AnotherPersonSearchableProperties implements SearchableProperty<Person> {
+                FIRST_NAME(Person::firstName),
+                LAST_NAME(Person::lastName),
+                AGE(Person::age);
+
+                private final Function<Person, Object> func;
+
+                AnotherPersonSearchableProperties(Function<Person, Object> func) {
+                    this.func = func;
+                }
+
+                @Override
+                public Function<Person, Object> getFunc() {
+                    return func;
+                }
+
+            }
+
+            var hashCode1 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class).hashCode();
+            var hashCode2 = new MultiPropertySearchCollection<>(AnotherPersonSearchableProperties.class).hashCode();
+
+            assertNotEquals(hashCode1, hashCode2);
+        }
+
+        @Test
+        void hashCodesOfTwoCollectionsAreEqual() {
+            var uut1 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            uut1.add(new Person("test", "test", 20));
+            var uut2 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            uut2.add(new Person("test", "test", 20));
+
+            assertEquals(uut1.hashCode(), uut2.hashCode());
+        }
+
+        @Test
+        void hashCodesOfTwoCollectionsAreDifferent() {
+            var uut1 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            uut1.add(new Person("test", "test", 10));
+            var uut2 = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            uut2.add(new Person("test", "test", 20));
+
+            assertNotEquals(uut1.hashCode(), uut2.hashCode());
+        }
+
     }
 
     private static void addElements(MultiPropertySearchCollection<Person> uut) {
-        uut.addElement(new Person("Caleb", "Dominguez", 1));
-        uut.addElement(new Person("James", "Ryan", 2));
-        uut.addElement(new Person("Jacob", "Smith", 3));
-        uut.addElement(new Person("Kelsey", "Hawkins", 4));
-        uut.addElement(new Person("Karen", "Mcguire", 5));
-        uut.addElement(new Person("Colleen", null, 6));
-        uut.addElement(new Person("Crystal", "Carey", 7));
-        uut.addElement(new Person("John", "King", 8));
-        uut.addElement(new Person("Stephanie", "Chen", 9));
-        uut.addElement(new Person("Justin", "Fuller", 10));
+        uut.add(new Person("Caleb", "Dominguez", 1));
+        uut.add(new Person("James", "Ryan", 2));
+        uut.add(new Person("Jacob", "Smith", 3));
+        uut.add(new Person("Kelsey", "Hawkins", 4));
+        uut.add(new Person("Karen", "Mcguire", 5));
+        uut.add(new Person("Colleen", null, 6));
+        uut.add(new Person("Crystal", "Carey", 7));
+        uut.add(new Person("John", "King", 8));
+        uut.add(new Person("Stephanie", "Chen", 9));
+        uut.add(new Person("Justin", "Fuller", 10));
     }
 
     private static void addElementsWithIntersection(MultiPropertySearchCollection<Person> uut) {
-        uut.addElement(new Person("Caleb", "Dominguez", 1));
-        uut.addElement(new Person("James", "Ryan", 2));
-        uut.addElement(new Person("Jacob", "Smith", 3));
-        uut.addElement(new Person("Kelsey", "Hawkins", 4));
-        uut.addElement(new Person("Caleb", "Mcguire", 5));
-        uut.addElement(new Person("Colleen", "Dominguez", 6));
-        uut.addElement(new Person("Crystal", "Carey", 7));
-        uut.addElement(new Person("John", "King", 8));
-        uut.addElement(new Person("Jacob", "Dominguez", 9));
-        uut.addElement(new Person("Jacob", "Fuller", 10));
+        uut.add(new Person("Caleb", "Dominguez", 1));
+        uut.add(new Person("James", "Ryan", 2));
+        uut.add(new Person("Jacob", "Smith", 3));
+        uut.add(new Person("Kelsey", "Hawkins", 4));
+        uut.add(new Person("Caleb", "Mcguire", 5));
+        uut.add(new Person("Colleen", "Dominguez", 6));
+        uut.add(new Person("Crystal", "Carey", 7));
+        uut.add(new Person("John", "King", 8));
+        uut.add(new Person("Jacob", "Dominguez", 9));
+        uut.add(new Person("Jacob", "Fuller", 10));
     }
 
 }

@@ -37,10 +37,10 @@ public class Example {
         var collection = new MultiPropertySearchCollection<Person>(PersonSearchableProperties.class);
 
         // put elements into collection
-        collection.addElement(new Person("Caleb", "Dominguez", 1));
-        collection.addElement(new Person("James", "Ryan", 2));
-        collection.addElement(new Person("Jacob", "Smith", 3));
-        collection.addElement(new Person("Caleb", "Hawkins", 4));
+        collection.add(new Person("Caleb", "Dominguez", 1));
+        collection.add(new Person("James", "Ryan", 2));
+        collection.add(new Person("Jacob", "Smith", 3));
+        collection.add(new Person("Caleb", "Hawkins", 4));
 
 
         // then, search by properties quick:

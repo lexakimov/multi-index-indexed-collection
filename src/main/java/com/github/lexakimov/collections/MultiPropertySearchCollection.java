@@ -49,7 +49,7 @@ public class MultiPropertySearchCollection<E> {
         }
     }
 
-    public void addElement(E element) {
+    public void add(E element) {
         Objects.requireNonNull(element);
         var elementIndex = elements.size();
         updateIndices(element, elementIndex);
@@ -64,24 +64,18 @@ public class MultiPropertySearchCollection<E> {
         }
     }
 
-    public boolean remove(SearchableProperty<E> property, Object value) {
+    public boolean contains(E o) {
+        return elements.contains(o);
+    }
+
+    public boolean contains(SearchableProperty<E> property, Object value) {
         Objects.requireNonNull(property);
         var indexMap = indicesMapsByProperty.getOrDefault(property, null);
         if (indexMap == null) {
             return false;
         }
-
         var elementsIndices = indexMap.get(value);
-        if (elementsIndices.isEmpty()) {
-            return false;
-        }
-//        TODO подумать над алгоритмом
-//        TODO подумать как компактно хранить индексы
-        var result = new ArrayList<E>(elementsIndices.size());
-
-        elementsIndices.forEach(i -> result.add(elements.get(i)));
-
-        return true;
+        return !elementsIndices.isEmpty();
     }
 
     public List<E> searchByProperty(SearchableProperty<E> property, Object value) {
@@ -99,44 +93,11 @@ public class MultiPropertySearchCollection<E> {
         return result;
     }
 
-    public int size() {
-        return elements.size();
-    }
-
-    public boolean isEmpty() {
-        return elements.isEmpty();
-    }
-
-    public void clear() {
-        indicesMapsByProperty.clear();
-        elements.clear();
-    }
-
-    public boolean contains(E o) {
-        return elements.contains(o);
-    }
-
-    public boolean contains(SearchableProperty<E> property, Object value) {
-        Objects.requireNonNull(property);
-        var indexMap = indicesMapsByProperty.getOrDefault(property, null);
-        if (indexMap == null) {
-            return false;
-        }
-        var elementsIndices = indexMap.get(value);
-        return !elementsIndices.isEmpty();
-    }
-
-    public Iterator<E> iterator() {
-        return elements.iterator();
-    }
-
-
 //        TODO conjunction search
 //        TODO передавать comparator
 
-    public List<E> list(SearchableProperty<E> property) {
-        Objects.requireNonNull(property);
-        throw new UnsupportedOperationException("method does not implemented yet");
+    public Iterator<E> iterator() {
+        return elements.iterator();
     }
 
     public Iterator<E> iterator(SearchableProperty<E> property) {
@@ -147,6 +108,48 @@ public class MultiPropertySearchCollection<E> {
     public Iterator<E> stream(SearchableProperty<E> property) {
         Objects.requireNonNull(property);
         throw new UnsupportedOperationException("method does not implemented yet");
+    }
+
+    public List<E> list() {
+        return Collections.unmodifiableList(elements);
+    }
+
+    public List<E> list(SearchableProperty<E> property) {
+        Objects.requireNonNull(property);
+        throw new UnsupportedOperationException("method does not implemented yet");
+    }
+
+    public boolean remove(SearchableProperty<E> property, Object value) {
+        Objects.requireNonNull(property);
+        var indexMap = indicesMapsByProperty.getOrDefault(property, null);
+        if (indexMap == null) {
+            return false;
+        }
+
+        var elementsIndices = indexMap.get(value);
+        if (elementsIndices.isEmpty()) {
+            return false;
+        }
+//        TODO подумать над алгоритмом
+//        TODO подумать как компактно хранить индексы  IntArrayList
+        var result = new ArrayList<E>(elementsIndices.size());
+
+        elementsIndices.forEach(i -> result.add(elements.get(i)));
+
+        return true;
+    }
+
+    public void clear() {
+        indicesMapsByProperty.clear();
+        elements.clear();
+    }
+
+    public boolean isEmpty() {
+        return elements.isEmpty();
+    }
+
+    public int size() {
+        return elements.size();
     }
 
     @Override

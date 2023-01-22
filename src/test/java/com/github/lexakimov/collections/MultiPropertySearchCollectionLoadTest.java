@@ -36,7 +36,7 @@ class MultiPropertySearchCollectionLoadTest {
         var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
         {
             var start = System.currentTimeMillis();
-            plainList.forEach(uut::addElement);
+            plainList.forEach(uut::add);
             out.printf("%s elements added to collection for %sms%n", uut.size(), System.currentTimeMillis() - start);
             out.println();
         }
@@ -61,7 +61,7 @@ class MultiPropertySearchCollectionLoadTest {
     }
 
     private static void performLinearSearch(
-            LinkedList<Person> plainList,
+            List<Person> plainList,
             PersonSearchableProperty property,
             String value
     ) {
