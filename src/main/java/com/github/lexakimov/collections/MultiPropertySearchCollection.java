@@ -1,6 +1,6 @@
 package com.github.lexakimov.collections;
 
-import org.apache.commons.collections4.ListValuedMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import static org.apache.commons.collections4.MultiMapUtils.newListValuedHashMap;
 
 /**
  * @author akimov
@@ -27,7 +26,7 @@ public class MultiPropertySearchCollection<E> {
     /**
      * MAP[PROPERTY: MAP[PROPERTY_VALUE: LIST[indices of elements...]]]
      */
-    private final Map<SearchableProperty<E>, ListValuedMap<Object, Integer>> indicesMapsByProperty = new HashMap<>();
+    private final Map<SearchableProperty<E>, Map<Object, IntArrayList>> indicesMapsByProperty = new HashMap<>();
 
     public MultiPropertySearchCollection(Class<? extends SearchableProperty<E>> searchablePropertyEnumClass) {
         Objects.requireNonNull(searchablePropertyEnumClass);
@@ -49,18 +48,18 @@ public class MultiPropertySearchCollection<E> {
         }
     }
 
-    public void add(E element) {
+    public boolean add(E element) {
         Objects.requireNonNull(element);
         var elementIndex = elements.size();
         updateIndices(element, elementIndex);
-        elements.add(element);
+        return elements.add(element);
     }
 
     private void updateIndices(E element, int elementIndex) {
         for (SearchableProperty<E> propertyEnumConstant : propertyEnumConstants) {
             var value = getValueFunctions.get(propertyEnumConstant).apply(element);
-            var indexMap = indicesMapsByProperty.computeIfAbsent(propertyEnumConstant, k -> newListValuedHashMap());
-            indexMap.put(value, elementIndex);
+            var indexMap = indicesMapsByProperty.computeIfAbsent(propertyEnumConstant, k -> new HashMap<>());
+            indexMap.computeIfAbsent(value, o -> new IntArrayList()).add(elementIndex);
         }
     }
 
@@ -75,7 +74,7 @@ public class MultiPropertySearchCollection<E> {
             return false;
         }
         var elementsIndices = indexMap.get(value);
-        return !elementsIndices.isEmpty();
+        return elementsIndices != null && !elementsIndices.isEmpty();
     }
 
     public List<E> searchByProperty(SearchableProperty<E> property, Object value) {
@@ -86,6 +85,10 @@ public class MultiPropertySearchCollection<E> {
         }
 
         var elementsIndices = indexMap.get(value);
+        if (elementsIndices == null || elementsIndices.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         var result = new ArrayList<E>(elementsIndices.size());
 
         elementsIndices.forEach(i -> result.add(elements.get(i)));
@@ -119,6 +122,9 @@ public class MultiPropertySearchCollection<E> {
         throw new UnsupportedOperationException("method does not implemented yet");
     }
 
+    /**
+     * TODO подумать над алгоритмом
+     */
     public boolean remove(SearchableProperty<E> property, Object value) {
         Objects.requireNonNull(property);
         var indexMap = indicesMapsByProperty.getOrDefault(property, null);
@@ -130,8 +136,7 @@ public class MultiPropertySearchCollection<E> {
         if (elementsIndices.isEmpty()) {
             return false;
         }
-//        TODO подумать над алгоритмом
-//        TODO подумать как компактно хранить индексы  IntArrayList
+
         var result = new ArrayList<E>(elementsIndices.size());
 
         elementsIndices.forEach(i -> result.add(elements.get(i)));
