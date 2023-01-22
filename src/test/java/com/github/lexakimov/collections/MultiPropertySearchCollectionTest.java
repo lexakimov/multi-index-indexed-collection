@@ -92,7 +92,29 @@ class MultiPropertySearchCollectionTest {
         }
     }
 
-    //    TODO: test size by property
+    @Nested
+    @DisplayName("get size")
+    class Size {
+
+        @Test
+        void sizeByProperty() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElementsWithIntersection(uut));
+
+            assertThat(uut.size(FIRST_NAME, "Caleb"), equalTo(2));
+            assertThat(uut.size(FIRST_NAME, "Jacob"), equalTo(3));
+        }
+
+        @Test
+        void sizeByPropertyNullValue() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElementsWithIntersection(uut));
+            uut.add(new Person(null, "Hawkins", 4));
+            uut.add(new Person(null, "Mcguire", 5));
+
+            assertThat(uut.size(FIRST_NAME, null), equalTo(2));
+        }
+    }
 
     @Test
     void clear() {
@@ -235,6 +257,59 @@ class MultiPropertySearchCollectionTest {
     }
 
     @Nested
+    @DisplayName("iterate over elements")
+    class Iteration {
+
+        @Test
+        void iteratorTest() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+
+            var iterator = uut.iterator();
+            assertThat(iterator, notNullValue());
+            assertFalse(iterator.hasNext());
+
+            assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElements(uut));
+
+            iterator = uut.iterator();
+            assertThat(iterator, notNullValue());
+            for (int i = 0; i < uut.size() - 1; i++) {
+                assertTrue(iterator.hasNext());
+                assertThat(iterator.next(), notNullValue());
+            }
+
+            assertThat(iterator.next(), notNullValue());
+            assertFalse(iterator.hasNext());
+        }
+
+        @Test
+        void iteratorByNullProperty() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            assertThrows(NullPointerException.class, () -> uut.iterator(null));
+        }
+
+        @Test
+        void listByNullProperty() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            assertThrows(NullPointerException.class, () -> uut.list(null));
+        }
+
+        @Test
+        void streamByNullProperty() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            assertThrows(NullPointerException.class, () -> uut.stream(null));
+        }
+
+        @Test
+        void listIsUnmodifiable() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElements(uut));
+            var list = uut.list();
+            assertThat(list, hasSize(10));
+            assertThrows(UnsupportedOperationException.class, list::clear);
+        }
+    }
+
+    @Nested
     @DisplayName("equals() method")
     class Equals {
 
@@ -290,59 +365,6 @@ class MultiPropertySearchCollectionTest {
             uut2.add(new Person("test", "test", 20));
 
             assertNotEquals(uut1, uut2);
-        }
-    }
-
-    @Nested
-    @DisplayName("iterate over elements")
-    class Iteration {
-
-        @Test
-        void iteratorTest() {
-            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-
-            var iterator = uut.iterator();
-            assertThat(iterator, notNullValue());
-            assertFalse(iterator.hasNext());
-
-            assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElements(uut));
-
-            iterator = uut.iterator();
-            assertThat(iterator, notNullValue());
-            for (int i = 0; i < uut.size() - 1; i++) {
-                assertTrue(iterator.hasNext());
-                assertThat(iterator.next(), notNullValue());
-            }
-
-            assertThat(iterator.next(), notNullValue());
-            assertFalse(iterator.hasNext());
-        }
-
-        @Test
-        void iteratorByNullProperty() {
-            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-            assertThrows(NullPointerException.class, () -> uut.iterator(null));
-        }
-
-        @Test
-        void listByNullProperty() {
-            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-            assertThrows(NullPointerException.class, () -> uut.list(null));
-        }
-
-        @Test
-        void streamByNullProperty() {
-            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-            assertThrows(NullPointerException.class, () -> uut.stream(null));
-        }
-
-        @Test
-        void listIsUnmodifiable() {
-            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-            assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElements(uut));
-            var list = uut.list();
-            assertThat(list, hasSize(10));
-            assertThrows(UnsupportedOperationException.class, list::clear);
         }
     }
 

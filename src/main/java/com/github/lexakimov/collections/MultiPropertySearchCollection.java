@@ -152,6 +152,17 @@ public class MultiPropertySearchCollection<E> {
         return elements.size();
     }
 
+    public int size(SearchableProperty<E> property, Object value) {
+        Objects.requireNonNull(property);
+        var indexMap = indicesMapsByProperty.getOrDefault(property, null);
+        if (indexMap == null) {
+            return 0;
+        }
+
+        var elementsIndices = indexMap.get(value);
+        return elementsIndices.size();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
