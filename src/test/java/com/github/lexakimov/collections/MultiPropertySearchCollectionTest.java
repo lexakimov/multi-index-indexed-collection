@@ -29,6 +29,11 @@ class MultiPropertySearchCollectionTest {
     class Create {
 
         @Test
+        void createWithNull() {
+            assertThrows(NullPointerException.class, () -> new MultiPropertySearchCollection<>(null));
+        }
+
+        @Test
         void createWithNotEnum() {
             class BadEnum implements SearchableProperty<Person> {
                 @Override
@@ -63,7 +68,7 @@ class MultiPropertySearchCollectionTest {
     }
 
     @Nested
-    @DisplayName("add elements to collection")
+    @DisplayName("add elements")
     class Add {
 
         @Test
@@ -81,16 +86,26 @@ class MultiPropertySearchCollectionTest {
         }
 
         @Test
-        void clear() {
+        void addNullElement() {
             var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
-            assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElements(uut));
-            assertThat(uut.size(), equalTo(10));
-            uut.clear();
-            assertThat(uut.size(), equalTo(0));
+            assertThrows(NullPointerException.class, () -> uut.addElement(null));
         }
+    }
 
-        //    TODO: test size by property
-        //    TODO: extract containsElement to nested test class
+    //    TODO: test size by property
+
+    @Test
+    void clear() {
+        var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+        assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElements(uut));
+        assertThat(uut.size(), equalTo(10));
+        uut.clear();
+        assertThat(uut.size(), equalTo(0));
+    }
+
+    @Nested
+    @DisplayName("check that contains element")
+    class Contains {
 
         @Test
         void containsElement() {
@@ -98,6 +113,12 @@ class MultiPropertySearchCollectionTest {
             assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElements(uut));
             assertTrue(uut.contains(new Person("James", "Ryan", 2)));
             assertFalse(uut.contains(new Person("Tony", "Ryan", 2)));
+        }
+
+        @Test
+        void containsElementByNullProperty() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            assertThrows(NullPointerException.class, () -> uut.contains(null, "Jacob"));
         }
 
         @Test
@@ -110,10 +131,15 @@ class MultiPropertySearchCollectionTest {
         }
     }
 
-
     @Nested
-    @DisplayName("remove element(s) off collection")
+    @DisplayName("remove element(s)")
     class Remove {
+
+        @Test
+        void removeByProperty_null() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            assertThrows(NullPointerException.class, () -> uut.remove(null, "Jacob"));
+        }
 
         @Test
         void removeByProperty() {
@@ -132,8 +158,14 @@ class MultiPropertySearchCollectionTest {
     }
 
     @Nested
-    @DisplayName("search elements in collection by properties")
+    @DisplayName("search elements by properties")
     class Search {
+
+        @Test
+        void searchByNullProperty() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            assertThrows(NullPointerException.class, () -> uut.searchByProperty(null, "test"));
+        }
 
         @Test
         void searchInEmptyCollection() {
@@ -144,7 +176,7 @@ class MultiPropertySearchCollectionTest {
         }
 
         @Test
-        void searchInCollectionByNullValue() {
+        void searchByNullValue() {
             var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
             assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElements(uut));
 
@@ -168,7 +200,7 @@ class MultiPropertySearchCollectionTest {
                 John,      King, 8
                 Stephanie, Chen, 9
                 Justin,    Fuller, 10""", nullValues = "null")
-        void searchInCollection_noIntersections(String firstName, String lastName, int age) {
+        void searchWhenNoIntersections(String firstName, String lastName, int age) {
             var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
             assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElements(uut));
 
@@ -185,7 +217,7 @@ class MultiPropertySearchCollectionTest {
         @CsvSource(textBlock = """
                 Caleb, 2, '1,5'
                 Jacob, 3, '3,9,10'""")
-        void searchInCollection_withIntersections(String firstName, int size, String ages) {
+        void searchWhenHasIntersections(String firstName, int size, String ages) {
             var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
             assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElementsWithIntersection(uut));
 
@@ -203,7 +235,7 @@ class MultiPropertySearchCollectionTest {
     }
 
     @Nested
-    @DisplayName("tests of equals() method")
+    @DisplayName("equals() method")
     class Equals {
 
         @Test
@@ -263,7 +295,7 @@ class MultiPropertySearchCollectionTest {
     }
 
     @Nested
-    @DisplayName("tests of hashCode() method")
+    @DisplayName("hashCode() method")
     class HashCode {
 
         @Test
@@ -322,25 +354,48 @@ class MultiPropertySearchCollectionTest {
 
     }
 
-    @Test
-    void iteratorTest() {
-        var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+    @Nested
+    @DisplayName("iterate over elements")
+    class Iteration {
 
-        var iterator = uut.iterator();
-        assertThat(iterator, notNullValue());
-        assertFalse(iterator.hasNext());
+        @Test
+        void iteratorTest() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
 
-        assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElements(uut));
+            var iterator = uut.iterator();
+            assertThat(iterator, notNullValue());
+            assertFalse(iterator.hasNext());
 
-        iterator = uut.iterator();
-        assertThat(iterator, notNullValue());
-        for (int i = 0; i < uut.size() - 1; i++) {
-            assertTrue(iterator.hasNext());
+            assertDoesNotThrow(() -> MultiPropertySearchCollectionTest.addElements(uut));
+
+            iterator = uut.iterator();
+            assertThat(iterator, notNullValue());
+            for (int i = 0; i < uut.size() - 1; i++) {
+                assertTrue(iterator.hasNext());
+                assertThat(iterator.next(), notNullValue());
+            }
+
             assertThat(iterator.next(), notNullValue());
+            assertFalse(iterator.hasNext());
         }
 
-        assertThat(iterator.next(), notNullValue());
-        assertFalse(iterator.hasNext());
+        @Test
+        void iteratorByNullProperty() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            assertThrows(NullPointerException.class, () -> uut.iterator(null));
+        }
+
+        @Test
+        void listByNullProperty() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            assertThrows(NullPointerException.class, () -> uut.list(null));
+        }
+
+        @Test
+        void streamByNullProperty() {
+            var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+            assertThrows(NullPointerException.class, () -> uut.stream(null));
+        }
     }
 
     private static void addElements(MultiPropertySearchCollection<Person> uut) {

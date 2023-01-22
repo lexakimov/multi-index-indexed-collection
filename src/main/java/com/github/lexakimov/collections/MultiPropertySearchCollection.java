@@ -32,8 +32,9 @@ public class MultiPropertySearchCollection<E> {
     public MultiPropertySearchCollection(Class<? extends SearchableProperty<E>> searchablePropertyEnumClass) {
         Objects.requireNonNull(searchablePropertyEnumClass);
         if (!searchablePropertyEnumClass.isEnum()) {
-            throw new IllegalArgumentException("%s must be enum that extends %s".formatted(searchablePropertyEnumClass,
-                    SearchableProperty.class.getName()));
+            var message = "%s must be enum that extends %s".formatted(searchablePropertyEnumClass,
+                    SearchableProperty.class.getName());
+            throw new IllegalArgumentException(message);
         }
 
         var enumConstants = searchablePropertyEnumClass.getEnumConstants();
@@ -49,6 +50,7 @@ public class MultiPropertySearchCollection<E> {
     }
 
     public void addElement(E element) {
+        Objects.requireNonNull(element);
         var elementIndex = elements.size();
         updateIndices(element, elementIndex);
         elements.add(element);
@@ -63,6 +65,7 @@ public class MultiPropertySearchCollection<E> {
     }
 
     public boolean remove(SearchableProperty<E> property, Object value) {
+        Objects.requireNonNull(property);
         var indexMap = indicesMapsByProperty.getOrDefault(property, null);
         if (indexMap == null) {
             return false;
@@ -82,7 +85,7 @@ public class MultiPropertySearchCollection<E> {
     }
 
     public List<E> searchByProperty(SearchableProperty<E> property, Object value) {
-
+        Objects.requireNonNull(property);
         var indexMap = indicesMapsByProperty.getOrDefault(property, null);
         if (indexMap == null) {
             return Collections.emptyList();
@@ -114,6 +117,7 @@ public class MultiPropertySearchCollection<E> {
     }
 
     public boolean contains(SearchableProperty<E> property, Object value) {
+        Objects.requireNonNull(property);
         var indexMap = indicesMapsByProperty.getOrDefault(property, null);
         if (indexMap == null) {
             return false;
@@ -124,6 +128,25 @@ public class MultiPropertySearchCollection<E> {
 
     public Iterator<E> iterator() {
         return elements.iterator();
+    }
+
+
+//        TODO conjunction search
+//        TODO передавать comparator
+
+    public List<E> list(SearchableProperty<E> property) {
+        Objects.requireNonNull(property);
+        throw new UnsupportedOperationException("method does not implemented yet");
+    }
+
+    public Iterator<E> iterator(SearchableProperty<E> property) {
+        Objects.requireNonNull(property);
+        throw new UnsupportedOperationException("method does not implemented yet");
+    }
+
+    public Iterator<E> stream(SearchableProperty<E> property) {
+        Objects.requireNonNull(property);
+        throw new UnsupportedOperationException("method does not implemented yet");
     }
 
     @Override
