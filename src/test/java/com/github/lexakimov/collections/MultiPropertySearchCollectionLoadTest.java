@@ -1,12 +1,15 @@
 package com.github.lexakimov.collections;
 
+import com.github.lexakimov.omm.footprint.FootprintProcessor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import static com.github.lexakimov.collections.PersonSearchableProperty.FIRST_NAME;
@@ -18,15 +21,17 @@ class MultiPropertySearchCollectionLoadTest {
     @Test
     void searchInHugeCollection() throws IOException, URISyntaxException {
         var csvFilePath = Paths.get(getClass().getClassLoader().getResource("500_000_random_names.csv").toURI());
-        var plainList = new LinkedList<Person>();
+        var plainList = new ArrayList<Person>();
 
         {
             var start = System.currentTimeMillis();
             for (int i = 0; i < 30; i++) {
                 try (var lines = Files.lines(csvFilePath)) {
                     lines
-                            .map(name -> name.split(" ", 2))
-                            .map(splitName -> new Person(splitName[0], splitName[1], 10))
+                            .map(name -> {
+                                var spaceIndex = name.indexOf(' ');
+                                return new Person(name.substring(0, spaceIndex), name.substring(spaceIndex + 1), 10);
+                            })
                             .forEach(plainList::add);
                 }
             }
