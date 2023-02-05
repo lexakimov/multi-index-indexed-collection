@@ -15,24 +15,24 @@ import java.util.function.Function;
  * @author akimov
  * created at: 03.01.2023 18:00
  */
-public class MultiPropertySearchCollection<E> {
+public class MultiIndexIndexedCollection<E> {
 
     private final List<E> elements = new ArrayList<>();
 
-    private final List<SearchableProperty<E>> propertyEnumConstants = new LinkedList<>();
+    private final List<IndexDefinition<E>> propertyEnumConstants = new LinkedList<>();
 
-    private final Map<SearchableProperty<E>, Function<E, ?>> getValueFunctions = new HashMap<>();
+    private final Map<IndexDefinition<E>, Function<E, ?>> getValueFunctions = new HashMap<>();
 
     /**
      * MAP[PROPERTY: MAP[PROPERTY_VALUE: LIST[indices of elements...]]]
      */
-    private final Map<SearchableProperty<E>, Map<Object, IntArrayList>> indicesMapsByProperty = new HashMap<>();
+    private final Map<IndexDefinition<E>, Map<Object, IntArrayList>> indicesMapsByProperty = new HashMap<>();
 
-    public MultiPropertySearchCollection(Class<? extends SearchableProperty<E>> searchablePropertyEnumClass) {
+    public MultiIndexIndexedCollection(Class<? extends IndexDefinition<E>> searchablePropertyEnumClass) {
         Objects.requireNonNull(searchablePropertyEnumClass);
         if (!searchablePropertyEnumClass.isEnum()) {
             var message = "%s must be enum that extends %s".formatted(searchablePropertyEnumClass,
-                    SearchableProperty.class.getName());
+                    IndexDefinition.class.getName());
             throw new IllegalArgumentException(message);
         }
 
@@ -42,7 +42,7 @@ public class MultiPropertySearchCollection<E> {
                     "enum %s must contains at least 1 enumeration value".formatted(searchablePropertyEnumClass));
         }
 
-        for (SearchableProperty<E> enumConstant : enumConstants) {
+        for (IndexDefinition<E> enumConstant : enumConstants) {
             this.getValueFunctions.put(enumConstant, enumConstant.getFunc());
             this.propertyEnumConstants.add(enumConstant);
         }
@@ -56,7 +56,7 @@ public class MultiPropertySearchCollection<E> {
     }
 
     private void updateIndices(E element, int elementIndex) {
-        for (SearchableProperty<E> propertyEnumConstant : propertyEnumConstants) {
+        for (IndexDefinition<E> propertyEnumConstant : propertyEnumConstants) {
             var value = getValueFunctions.get(propertyEnumConstant).apply(element);
             var indexMap = indicesMapsByProperty.computeIfAbsent(propertyEnumConstant, k -> new HashMap<>());
             indexMap.computeIfAbsent(value, o -> new IntArrayList()).add(elementIndex);
@@ -67,7 +67,7 @@ public class MultiPropertySearchCollection<E> {
         return elements.contains(o);
     }
 
-    public boolean contains(SearchableProperty<E> property, Object value) {
+    public boolean contains(IndexDefinition<E> property, Object value) {
         Objects.requireNonNull(property);
         var indexMap = indicesMapsByProperty.getOrDefault(property, null);
         if (indexMap == null) {
@@ -77,7 +77,7 @@ public class MultiPropertySearchCollection<E> {
         return elementsIndices != null && !elementsIndices.isEmpty();
     }
 
-    public List<E> searchByProperty(SearchableProperty<E> property, Object value) {
+    public List<E> searchByProperty(IndexDefinition<E> property, Object value) {
         Objects.requireNonNull(property);
         var indexMap = indicesMapsByProperty.getOrDefault(property, null);
         if (indexMap == null) {
@@ -103,12 +103,12 @@ public class MultiPropertySearchCollection<E> {
         return elements.iterator();
     }
 
-    public Iterator<E> iterator(SearchableProperty<E> property) {
+    public Iterator<E> iterator(IndexDefinition<E> property) {
         Objects.requireNonNull(property);
         throw new UnsupportedOperationException("method does not implemented yet");
     }
 
-    public Iterator<E> stream(SearchableProperty<E> property) {
+    public Iterator<E> stream(IndexDefinition<E> property) {
         Objects.requireNonNull(property);
         throw new UnsupportedOperationException("method does not implemented yet");
     }
@@ -117,7 +117,7 @@ public class MultiPropertySearchCollection<E> {
         return Collections.unmodifiableList(elements);
     }
 
-    public List<E> list(SearchableProperty<E> property) {
+    public List<E> list(IndexDefinition<E> property) {
         Objects.requireNonNull(property);
         throw new UnsupportedOperationException("method does not implemented yet");
     }
@@ -125,7 +125,7 @@ public class MultiPropertySearchCollection<E> {
     /**
      * TODO подумать над алгоритмом
      */
-    public boolean remove(SearchableProperty<E> property, Object value) {
+    public boolean remove(IndexDefinition<E> property, Object value) {
         Objects.requireNonNull(property);
         var indexMap = indicesMapsByProperty.getOrDefault(property, null);
         if (indexMap == null) {
@@ -157,7 +157,7 @@ public class MultiPropertySearchCollection<E> {
         return elements.size();
     }
 
-    public int size(SearchableProperty<E> property, Object value) {
+    public int size(IndexDefinition<E> property, Object value) {
         Objects.requireNonNull(property);
         var indexMap = indicesMapsByProperty.getOrDefault(property, null);
         if (indexMap == null) {
@@ -173,7 +173,7 @@ public class MultiPropertySearchCollection<E> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        MultiPropertySearchCollection<?> that = (MultiPropertySearchCollection<?>) o;
+        MultiIndexIndexedCollection<?> that = (MultiIndexIndexedCollection<?>) o;
 
         if (!elements.equals(that.elements)) return false;
         if (!propertyEnumConstants.equals(that.propertyEnumConstants)) return false;

@@ -12,11 +12,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import static com.github.lexakimov.collections.PersonSearchableProperty.FIRST_NAME;
-import static com.github.lexakimov.collections.PersonSearchableProperty.LAST_NAME;
+import static com.github.lexakimov.collections.PersonIndex.FIRST_NAME;
+import static com.github.lexakimov.collections.PersonIndex.LAST_NAME;
+import static com.github.lexakimov.omm.footprint.FootprintResultOrderBy.SIZE;
+import static com.github.lexakimov.omm.footprint.FootprintResultOrderByDirection.DESC;
 import static java.lang.System.out;
 
-class MultiPropertySearchCollectionLoadTest {
+class MultiIndexIndexedCollectionLoadTest {
 
     @Test
     void searchInHugeCollection() throws IOException, URISyntaxException {
@@ -38,7 +40,7 @@ class MultiPropertySearchCollectionLoadTest {
             out.printf("%s elements parsed from CSV for %sms%n", plainList.size(), System.currentTimeMillis() - start);
         }
 
-        var uut = new MultiPropertySearchCollection<>(PersonSearchableProperty.class);
+        var uut = new MultiIndexIndexedCollection<>(PersonIndex.class);
         {
             var start = System.currentTimeMillis();
             plainList.forEach(uut::add);
@@ -67,7 +69,7 @@ class MultiPropertySearchCollectionLoadTest {
 
     private static void performLinearSearch(
             List<Person> plainList,
-            PersonSearchableProperty property,
+            PersonIndex property,
             String value
     ) {
         var start = System.currentTimeMillis();
@@ -79,8 +81,8 @@ class MultiPropertySearchCollectionLoadTest {
     }
 
     private static void performSearchInCollection(
-            MultiPropertySearchCollection<Person> uut,
-            PersonSearchableProperty property,
+            MultiIndexIndexedCollection<Person> uut,
+            PersonIndex property,
             String value
     ) {
         var start = System.currentTimeMillis();

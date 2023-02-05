@@ -15,15 +15,15 @@ public class Example {
 
         }
 
-        // then, define Enum class that implements MultiPropertySearchCollection.SearchableProperty with properties
-        enum PersonSearchableProperties implements SearchableProperty<Person> {
+        // then, define Enum class that implements MultiIndexIndexedCollection.IndexDefinition
+        enum PersonIndexDefinition implements IndexDefinition<Person> {
             FIRST_NAME(Person::firstName),
             LAST_NAME(Person::lastName),
             AGE(Person::age);
 
             private final Function<Person, Object> func;
 
-            PersonSearchableProperties(Function<Person, Object> func) {
+            PersonIndexDefinition(Function<Person, Object> func) {
                 this.func = func;
             }
 
@@ -33,8 +33,8 @@ public class Example {
             }
         }
 
-        // then, create an instance on MultiPropertySearchCollection
-        var collection = new MultiPropertySearchCollection<Person>(PersonSearchableProperties.class);
+        // then, create an instance on MultiIndexIndexedCollection
+        var collection = new MultiIndexIndexedCollection<Person>(PersonIndexDefinition.class);
 
         // put elements into collection
         collection.add(new Person("Caleb", "Dominguez", 1));
@@ -45,10 +45,10 @@ public class Example {
 
         // then, search by properties quick:
 
-        var result1 = collection.searchByProperty(PersonSearchableProperties.FIRST_NAME, "Caleb");
+        var result1 = collection.searchByProperty(PersonIndexDefinition.FIRST_NAME, "Caleb");
         // returns first and forth element
 
-        var result2 = collection.searchByProperty(PersonSearchableProperties.LAST_NAME, "Ryan");
+        var result2 = collection.searchByProperty(PersonIndexDefinition.LAST_NAME, "Ryan");
         // returns second element
     }
 }
