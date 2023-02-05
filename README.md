@@ -1,4 +1,4 @@
-# MultiIndexIndexedCollection
+# Multi-index indexed collection
 
 [Read in Russian](README_RU.md)
 
@@ -6,7 +6,7 @@ It is a sandbox repository with a collection that allows you to store objects in
 object properties in better than O(n) time.
 
 ## Features
-- store
+- TODO
 
 
 ## Introduction to the problem
