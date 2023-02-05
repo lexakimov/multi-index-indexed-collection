@@ -5,15 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.lexakimov</groupId>
-    <artifactId>multi-property-search-collection</artifactId>
+    <artifactId>multi-index-indexed-collection</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Multi-property search collection</name>
+    <name>Multi-index indexed collection</name>
     <description>It is a sandbox repository with a collection that allows you to store objects in a list and search
         through predefined object properties in better than O(n) time.
     </description>
-    <url>https://github.com/lexakimov/multi-property-search-collection</url>
+    <url>https://github.com/lexakimov/multi-index-indexed-collection</url>
 
     <licenses>
         <license>
