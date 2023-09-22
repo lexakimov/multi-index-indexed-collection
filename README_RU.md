@@ -45,14 +45,14 @@ var johns = personsByFirstName.get("john");
 Создайте для вашего класса `enum` реализующий интерфейс `com.github.lexakimov.collections.IndexDefinition`:
 
 ```java
-enum PersonSearchableProperties implements SearchableProperty<Person> {
+enum PersonIndexDefinition implements SearchableProperty<Person> {
     FIRST_NAME(Person::firstName),
     LAST_NAME(Person::lastName),
     AGE(Person::age);
 
     private final Function<Person, Object> func;
 
-    PersonSearchableProperties(Function<Person, Object> func) {
+    PersonIndexDefinition(Function<Person, Object> func) {
         this.func = func;
     }
 
@@ -66,7 +66,7 @@ enum PersonSearchableProperties implements SearchableProperty<Person> {
 Создайте экземпляр класса `com.github.lexakimov.collections.MultiIndexIndexedCollection`, передав в конструктор ранее созданный enum-класс:
 
 ```java
-var collection = new MultiIndexIndexedCollection<Person>(PersonSearchableProperties.class);
+var collection = new MultiIndexIndexedCollection<Person>(PersonIndexDefinition.class);
 ```
 
 Добавляйте в коллекцию элементы:
