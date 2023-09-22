@@ -76,7 +76,7 @@ enum PersonIndexDefinition implements IndexDefinition<Person> {
 2. Create an instance of `com.github.lexakimov.collections.MultiIndexIndexedCollection`, with previously created enum as constructor argument:
 
 ```java
-var collection = new MultiIndexIndexedCollection<Person>(PersonSearchableProperties.class);
+var collection = new MultiIndexIndexedCollection<Person>(PersonIndexDefinition.class);
 ```
 
 3. Add elements to collection:
